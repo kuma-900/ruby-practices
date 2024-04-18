@@ -32,4 +32,7 @@ print "   " * first_day.wday
   if date.saturday?
     puts
   end
+  if date == last_day
+    puts
+  end
 end
