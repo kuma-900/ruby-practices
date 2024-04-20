@@ -27,12 +27,7 @@ print "   " * first_day.wday
   if date == today
     print "\e[7m#{date.day.to_s.rjust(2)}\e[0m " 
   else
-  print date.day.to_s.rjust(2) + " "
+    print date.day.to_s.rjust(2) + " "
   end
-  if date.saturday?
-    puts
-  end
-  if date == last_day
-    puts
-  end
+  puts if date.saturday? || date == last_day
 end
