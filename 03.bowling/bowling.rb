@@ -11,14 +11,14 @@ scores.each do |score|
 
   if frame_count < 10
     if score == 'X'
-       shots << 10
-       shots << 0
-       frame_count += 1
+      shots << 10
+      shots << 0
+      frame_count += 1
     else
       shots << s.to_i
       frame_count += 1 if shots.size.even?
     end
- elsif frame_count == 10
+  elsif frame_count == 10
     shots << (score == 'X' ? 10 : score.to_i)
     total_shots += 1
   end
