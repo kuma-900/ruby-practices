@@ -4,48 +4,42 @@
 scores = ARGV[0].split(',')
 shots = []
 frame_count = 1
-total_shots = 0
+shots_in_frame = []
 
 scores.each do |score|
-  break if frame_count == 10 && total_shots >= 3
+  score_number = score == 'X' ? 10 : score.to_i
+  shots_in_frame << score_number
+  shots_in_frame << 0 if score_number == 10 && frame_count < 10 && shots_in_frame.length < 2
 
-  if frame_count < 10
-    if score == 'X'
-      shots << 10
-      shots << 0
-      frame_count += 1
-    else
-      shots << s.to_i
-      frame_count += 1 if shots.size.even?
-    end
-  elsif frame_count == 10
-    shots << (score == 'X' ? 10 : score.to_i)
-    total_shots += 1
+  if shots_in_frame.length == 2
+    shots << shots_in_frame.dup
+    shots_in_frame.clear
+    frame_count += 1
   end
-end
 
-frames = shots.each_slice(2).to_a
+  shots << shots_in_frame.dup if frame_count > 10
+end
 
 point = 0
 
-frames.each_with_index do |frame, index|
+shots.each_with_index do |frame, index|
   next point += frame.sum if frame[0] != 10 && frame.sum != 10
 
   point += if index < 8
              if frame[0] == 10
-               if frames[index + 1][0] == 10
-                 20 + frames[index + 2][0]
+               if shots[index + 1][0] == 10
+                 20 + shots[index + 2][0]
                else
-                 10 + frames[index + 1].sum
+                 10 + shots[index + 1].sum
                end
              else
-               10 + frames[index + 1][0]
+               10 + shots[index + 1][0]
              end
            elsif index == 8
              if frame[0] == 10
-               10 + frames[9].sum
+               10 + shots[9].sum
              else
-               10 + frames[9][0]
+               10 + shots[9][0]
              end
            else
              frame.sum
