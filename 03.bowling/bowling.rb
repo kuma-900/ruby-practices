@@ -24,23 +24,12 @@ shots.each_with_index do |frame, index|
   point += frame.sum
   next if (frame[0] != 10 && frame.sum != 10) || index > 8
 
-  point += if index < 8
-             if frame[0] == 10
-               if shots[index + 1][0] == 10
-                 10 + shots[index + 2][0]
-               else
-                 shots[index + 1].sum
-               end
-             else
-               shots[index + 1][0]
-             end
-           elsif index == 8
-             if frame[0] == 10
-               shots[9].sum
-             else
-               shots[9][0]
-             end
-           end
+  if frame[0] == 10
+    point += shots[index + 1].sum
+    point += shots[index + 2][0] if index < 8 && shots[index + 1][0] == 10
+  else
+    point += shots[index + 1][0]
+  end
 end
 
 puts point
