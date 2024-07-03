@@ -1,24 +1,28 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-entries = Dir.entries('.')
+COLUMN_COUNT = 3
 
 def remove_hidden_files(entries)
   entries.reject { |entry| entry.start_with?('.') }
 end
 
-visible_entries = remove_hidden_files(entries)
+def calculate_layout(entries)
+  max_width = entries.map(&:length).max
+  row_count = (entries.size / COLUMN_COUNT.to_f).ceil
+  [max_width, row_count]
+end
 
+entries = Dir.entries('.')
+visible_entries = remove_hidden_files(entries)
 sorted_entries = visible_entries.sort
 
-MAX_WIDTH = sorted_entries.map(&:length).max
-COLUMN_COUNT = 3
-ROW_COUNT = (sorted_entries.size / COLUMN_COUNT.to_f).ceil
+max_width, row_count = calculate_layout(sorted_entries)
 
-(0...ROW_COUNT).each do |row|
+(0...row_count).each do |row|
   (0...COLUMN_COUNT).each do |col|
-    index = row + col * ROW_COUNT
-    print sorted_entries[index].ljust(MAX_WIDTH + 4) if index < sorted_entries.size
+    index = row + col * row_count
+    print sorted_entries[index].ljust(max_width + 4) if index < sorted_entries.size
   end
   puts
 end
