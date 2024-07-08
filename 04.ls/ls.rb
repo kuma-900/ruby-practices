@@ -7,22 +7,26 @@ def remove_hidden_files(entries)
   entries.reject { |entry| entry.start_with?('.') }
 end
 
-def calculate_layout(entries)
+def layout_settings(entries)
   max_width = entries.map(&:length).max
   row_count = (entries.size / COLUMN_COUNT.to_f).ceil
-  [max_width, row_count]
+  {
+    max_width:,
+    row_count:,
+    column_count: COLUMN_COUNT
+  }
 end
 
 entries = Dir.entries('.')
 visible_entries = remove_hidden_files(entries)
 sorted_entries = visible_entries.sort
 
-max_width, row_count = calculate_layout(sorted_entries)
+layout = layout_settings(sorted_entries)
 
-(0...row_count).each do |row|
-  (0...COLUMN_COUNT).each do |col|
-    index = row + col * row_count
-    print sorted_entries[index].ljust(max_width + 4) if index < sorted_entries.size
+(0...layout[:row_count]).each do |row|
+  (0...layout[:column_count]).each do |col|
+    index = row + col * layout[:row_count]
+    print sorted_entries[index].ljust(layout[:max_width] + 4) if index < sorted_entries.size
   end
   puts
 end
