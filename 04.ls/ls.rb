@@ -21,12 +21,12 @@ entries = Dir.entries('.')
 visible_entries = remove_hidden_files(entries)
 sorted_entries = visible_entries.sort
 
-layout = layout_settings(sorted_entries)
+settings = layout_settings(sorted_entries)
 
-(0...layout[:row_count]).each do |row|
-  (0...layout[:column_count]).each do |col|
-    index = row + col * layout[:row_count]
-    print sorted_entries[index].ljust(layout[:max_width] + 4) if index < sorted_entries.size
+(0...settings[:row_count]).each do |row|
+  (0...settings[:column_count]).each do |col|
+    index = row + col * settings[:row_count]
+    print sorted_entries[index].ljust(settings[:max_width] + 4) if index < sorted_entries.size
   end
   puts
 end
