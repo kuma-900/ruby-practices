@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
 COLUMN_COUNT = 3
 
 def remove_hidden_files(entries)
@@ -17,9 +19,16 @@ def layout_settings(entries)
   }
 end
 
+options = {}
+opt = OptionParser.new
+
+opt.on('-a') { options[:show_hidden] = true }
+
+opt.parse!(ARGV)
+
 entries = Dir.entries('.')
-visible_entries = remove_hidden_files(entries)
-sorted_entries = visible_entries.sort
+entries = remove_hidden_files(entries) unless options[:show_hidden]
+sorted_entries = entries.sort
 
 settings = layout_settings(sorted_entries)
 
