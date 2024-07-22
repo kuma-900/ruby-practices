@@ -23,12 +23,13 @@ options = {}
 opt = OptionParser.new
 
 opt.on('-a') { options[:show_hidden] = true }
+opt.on('-r') { options[:reverse] = true }
 
 opt.parse!(ARGV)
 
 entries = Dir.entries('.')
 entries = remove_hidden_files(entries) unless options[:show_hidden]
-sorted_entries = entries.sort
+sorted_entries = options[:reverse] ? entries.sort.reverse : entries.sort
 
 settings = layout_settings(sorted_entries)
 
