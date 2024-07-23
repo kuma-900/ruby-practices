@@ -27,16 +27,16 @@ opt.on('-r') { options[:reverse] = true }
 
 opt.parse!(ARGV)
 
-entries = Dir.entries('.')
+entries = Dir.entries('.').sort
 entries = remove_hidden_files(entries) unless options[:show_hidden]
-sorted_entries = options[:reverse] ? entries.sort.reverse : entries.sort
+entries = options[:reverse] ? entries.reverse : entries
 
-settings = layout_settings(sorted_entries)
+settings = layout_settings(entries)
 
 (0...settings[:row_count]).each do |row|
   (0...settings[:column_count]).each do |col|
     index = row + col * settings[:row_count]
-    print sorted_entries[index].ljust(settings[:max_width] + 4) if index < sorted_entries.size
+    print entries[index].ljust(settings[:max_width] + 4) if index < entries.size
   end
   puts
 end
