@@ -29,14 +29,14 @@ opt.parse!(ARGV)
 
 entries = Dir.entries('.').sort
 entries = remove_hidden_files(entries) unless options[:show_hidden]
-entries = options[:reverse] ? entries.reverse : entries
+ordered_entries = options[:reverse] ? entries.reverse : entries
 
-settings = layout_settings(entries)
+settings = layout_settings(ordered_entries)
 
 (0...settings[:row_count]).each do |row|
   (0...settings[:column_count]).each do |col|
     index = row + col * settings[:row_count]
-    print entries[index].ljust(settings[:max_width] + 4) if index < entries.size
+    print ordered_entries[index].ljust(settings[:max_width] + 4) if index < ordered_entries.size
   end
   puts
 end
