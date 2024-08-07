@@ -23,19 +23,20 @@ options = {}
 opt = OptionParser.new
 
 opt.on('-a') { options[:show_hidden] = true }
+opt.on('-r') { options[:reverse] = true }
 
 opt.parse!(ARGV)
 
-entries = Dir.entries('.')
+entries = Dir.entries('.').sort
 entries = remove_hidden_files(entries) unless options[:show_hidden]
-sorted_entries = entries.sort
+ordered_entries = options[:reverse] ? entries.reverse : entries
 
-settings = layout_settings(sorted_entries)
+settings = layout_settings(ordered_entries)
 
 (0...settings[:row_count]).each do |row|
   (0...settings[:column_count]).each do |col|
     index = row + col * settings[:row_count]
-    print sorted_entries[index].ljust(settings[:max_width] + 4) if index < sorted_entries.size
+    print ordered_entries[index].ljust(settings[:max_width] + 4) if index < ordered_entries.size
   end
   puts
 end
