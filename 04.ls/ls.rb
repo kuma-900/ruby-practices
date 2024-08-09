@@ -58,15 +58,15 @@ def collect_file_details(entries)
     total_blocks += file_stat.blocks
     file_mode_octal = file_stat.mode.to_s(8).rjust(OCTAL_LENGTH, '0')
 
-    file_type = file_type_to_string(file_mode_octal[0..1])
-    file_permission = permission_to_string(file_mode_octal[-3..])
-    nlink = file_stat.nlink
-    owner_name = Etc.getpwuid(file_stat.uid).name
-    group_name = Etc.getgrgid(file_stat.gid).name
-    file_size = file_stat.size
-    mtime = file_stat.mtime.strftime(DATE_FORMAT)
-
-    ["#{file_type}#{file_permission}", nlink.to_s, owner_name, group_name, file_size.to_s, mtime, entry]
+    {
+      file_type_and_permission: "#{file_type_to_string(file_mode_octal[0..1])}#{permission_to_string(file_mode_octal[-3..])}",
+      nlink: file_stat.nlink.to_s,
+      owner_name: Etc.getpwuid(file_stat.uid).name,
+      group_name: Etc.getgrgid(file_stat.gid).name,
+      file_size: file_stat.size.to_s,
+      mtime: file_stat.mtime.strftime(DATE_FORMAT),
+      file_name: entry
+    }
   end
 
   [total_blocks, file_details]
@@ -90,17 +90,21 @@ if options[:long_format]
 
   puts "total #{total_blocks}"
 
-  widths = file_details.transpose.map { |column| column.map(&:length).max }
+  widths = {}
+
+  file_details.first.keys.map do |key|
+    widths[key] = file_details.map { |detail| detail[key].length }.max
+  end
 
   file_details.each do |file_detail|
-    print file_detail[0].ljust(widths[0])
-    print file_detail[1].rjust(widths[1] + 2)
-    print file_detail[2].rjust(widths[2] + 1)
-    print file_detail[3].rjust(widths[3] + 2)
-    print file_detail[4].rjust(widths[4] + 2)
-    print file_detail[5].rjust(widths[5] + 2)
+    print file_detail[:file_type_and_permission].ljust(widths[:file_type_and_permission])
+    print file_detail[:nlink].rjust(widths[:nlink] + 2)
+    print file_detail[:owner_name].rjust(widths[:owner_name] + 1)
+    print file_detail[:group_name].rjust(widths[:group_name] + 2)
+    print file_detail[:file_size].rjust(widths[:file_size] + 2)
+    print file_detail[:mtime].rjust(widths[:mtime] + 2)
     print ' '
-    print file_detail[6].ljust(widths[6] + 2)
+    print file_detail[:file_name].ljust(widths[:file_name] + 2)
     puts
   end
 
