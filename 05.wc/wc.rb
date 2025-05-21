@@ -33,30 +33,14 @@ def format_output(result, options, filename = nil)
   puts "#{formatted_output}#{filename_output}"
 end
 
-def update_totals(result, totals)
-  totals[:line] += result[:line]
-  totals[:word] += result[:word]
-  totals[:byte] += result[:byte]
-end
-
 totals = { line: 0, word: 0, byte: 0 }
+files = ARGV.empty? ? [nil] : ARGV
 
-if ARGV.empty?
-  content = $stdin.read
-  result = process_content(content)
-  format_output(result, options)
-elsif ARGV.size == 1
-  filename = ARGV.first
-  content = File.read(filename)
+files.each do |filename|
+  content = filename ? File.read(filename) : $stdin.read
   result = process_content(content)
   format_output(result, options, filename)
-elsif ARGV.size > 1
-  ARGV.each do |file_name|
-    content = File.read(file_name)
-    result = process_content(content)
-    format_output(result, options, file_name)
-    update_totals(result, totals)
-  end
-
-  format_output(totals, options, 'total')
+  totals.merge!(result) { |_, a, b| a + b } if files.size > 1
 end
+
+format_output(totals, options, 'total') if files.size > 1
