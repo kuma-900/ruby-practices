@@ -9,7 +9,26 @@ class Game
   end
 
   def score
-    @frames.sum(&:base_score) + @bonus_total
+    base_total = @frames.sum(&:base_score)
+
+    bonus_total = 0
+    shot_index = 0
+    frame_index = 0
+
+    while frame_index < 9
+      if @all_shots[shot_index].score == 10
+        bonus_total += @all_shots[shot_index + 1, 2].sum(&:score)
+        shot_index += 1
+      else
+        shots = @all_shots[shot_index, 2]
+        bonus_total += @all_shots[shot_index + 2].score if shots.sum(&:score) == 10
+        shot_index += 2
+      end
+
+      frame_index += 1
+    end
+
+    base_total + bonus_total
   end
 
   private
@@ -18,18 +37,15 @@ class Game
   def build_frames
     frames = []
     shot_index = 0
-    bonus_total = 0
 
     # 1〜9フレーム目はストライク(1投)か、2投でフレームを分割する
     while frames.size < 9
       if @all_shots[shot_index].score == 10
         frames << Frame.new([@all_shots[shot_index]])
-        bonus_total += @all_shots[shot_index + 1, 2].sum(&:score)
         shot_index += 1
       else
         shots = @all_shots[shot_index, 2]
         frames << Frame.new(shots)
-        bonus_total += @all_shots[shot_index + 2].score if shots.sum(&:score) == 10
         shot_index += 2
       end
     end
@@ -37,7 +53,6 @@ class Game
     # 10フレーム目は残り全ての投球
     frames << Frame.new(@all_shots[shot_index..])
 
-    @bonus_total = bonus_total
     frames
   end
 end
