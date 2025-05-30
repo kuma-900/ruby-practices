@@ -9,26 +9,22 @@ class Game
   end
 
   def score
-    base_total = @frames.sum(&:base_score)
-
-    bonus_total = 0
+    points = 0
     shot_index = 0
-    frame_index = 0
 
-    while frame_index < 9
-      if @all_shots[shot_index].score == 10
-        bonus_total += @all_shots[shot_index + 1, 2].sum(&:score)
-        shot_index += 1
-      else
-        shots = @all_shots[shot_index, 2]
-        bonus_total += @all_shots[shot_index + 2].score if shots.sum(&:score) == 10
-        shot_index += 2
-      end
+    @frames.each_with_index do |frame, frame_index|
+      points += frame.base_score
+      shot_index += frame.shots_count
 
-      frame_index += 1
+      next if frame_index == 9 || (!frame.strike? && !frame.spare?)
+
+      # ストライクは次の2投、スペアは次の1投がボーナス対象
+      bonus_count = frame.strike? ? 2 : 1
+      bonus_shots = @all_shots[shot_index, bonus_count]
+      points += frame.bonus_score(bonus_shots)
     end
 
-    base_total + bonus_total
+    points
   end
 
   private
