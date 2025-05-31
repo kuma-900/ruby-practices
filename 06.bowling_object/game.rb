@@ -9,13 +9,15 @@ class Game
   SPARE_BONUS_SHOTS = 1
 
   def initialize(input_marks)
-    @all_shots = input_marks.split(',').map { |mark| Shot.new(mark) }
-    @frames = build_frames
+    all_shots = input_marks.split(',').map { |mark| Shot.new(mark) }
+    @frames = build_frames(all_shots)
   end
 
   def score
     points = 0
     shot_index = 0
+    # フレームから全投球を1つの配列にまとめて作成
+    all_shots = @frames.flat_map(&:shots)
 
     @frames.each_with_index do |frame, frame_index|
       points += frame.shots.sum(&:score)
@@ -25,7 +27,7 @@ class Game
 
       # ストライクは次の STRIKE_BONUS_SHOTS 投、スペアでは次の SPARE_BONUS_SHOTS 投がボーナス対象
       bonus_count = frame.strike? ? STRIKE_BONUS_SHOTS : SPARE_BONUS_SHOTS
-      bonus_shots = @all_shots[shot_index, bonus_count]
+      bonus_shots = all_shots[shot_index, bonus_count]
       points += frame.bonus_score(bonus_shots)
     end
 
@@ -34,25 +36,25 @@ class Game
 
   private
 
-  # 入力された全投球(@all_shots)からTOTAL_FRAMES個のFrameオブジェクトを配列として生成する
-  def build_frames
+  # 入力された全投球(all_shots)からTOTAL_FRAMES個のFrameオブジェクトを配列として生成する
+  def build_frames(all_shots)
     frames = []
     shot_index = 0
 
     # 最終フレーム以外はストライク(1投)か、2投でフレームを分割する
     while frames.size < FINAL_FRAME_INDEX
-      if @all_shots[shot_index].score == Frame::MAX_PIN
-        frames << Frame.new([@all_shots[shot_index]])
+      if all_shots[shot_index].score == Frame::MAX_PIN
+        frames << Frame.new([all_shots[shot_index]])
         shot_index += 1
       else
-        shots = @all_shots[shot_index, 2]
+        shots = all_shots[shot_index, 2]
         frames << Frame.new(shots)
         shot_index += 2
       end
     end
 
     # 最終フレームは残り全ての投球
-    frames << Frame.new(@all_shots[shot_index..])
+    frames << Frame.new(all_shots[shot_index..])
 
     frames
   end
