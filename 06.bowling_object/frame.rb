@@ -3,24 +3,18 @@
 require_relative 'shot'
 
 class Frame
-  def initialize(frame_shots)
-    @frame_shots = frame_shots
-  end
+  attr_reader :shots
 
-  def shots_count
-    @frame_shots.size
-  end
-
-  def base_score
-    @frame_shots.sum(&:score)
+  def initialize(shots)
+    @shots = shots
   end
 
   def strike?
-    shots_count == 1 && base_score == 10
+    shots.size == 1 && shots.sum(&:score) == 10
   end
 
   def spare?
-    shots_count == 2 && base_score == 10
+    shots.size == 2 && shots.sum(&:score) == 10
   end
 
   def bonus_score(bonus_shots)

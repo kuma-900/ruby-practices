@@ -13,8 +13,8 @@ class Game
     shot_index = 0
 
     @frames.each_with_index do |frame, frame_index|
-      points += frame.base_score
-      shot_index += frame.shots_count
+      points += frame.shots.sum(&:score)
+      shot_index += frame.shots.size
 
       next if frame_index == 9 || (!frame.strike? && !frame.spare?)
 
