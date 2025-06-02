@@ -19,6 +19,10 @@ class Frame
     shots.size == 2 && shots.sum(&:score) == MAX_PIN
   end
 
+  def open?
+    shots.size == 2 && shots.sum(&:score) < MAX_PIN
+  end
+
   def bonus_score(bonus_shots)
     bonus_shots.sum(&:score)
   end

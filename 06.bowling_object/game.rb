@@ -23,7 +23,7 @@ class Game
       points += frame.shots.sum(&:score)
       shot_index += frame.shots.size
 
-      next if frame_index == FINAL_FRAME_INDEX || (!frame.strike? && !frame.spare?)
+      next if frame_index == FINAL_FRAME_INDEX || frame.open?
 
       # ストライクは次の STRIKE_BONUS_SHOTS 投、スペアでは次の SPARE_BONUS_SHOTS 投がボーナス対象
       bonus_count = frame.strike? ? STRIKE_BONUS_SHOTS : SPARE_BONUS_SHOTS
