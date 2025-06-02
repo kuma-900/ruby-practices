@@ -15,19 +15,17 @@ class Game
 
   def score
     points = 0
-    shot_index = 0
-    # フレームから全投球を1つの配列にまとめて作成
-    all_shots = @frames.flat_map(&:shots)
 
     @frames.each_with_index do |frame, frame_index|
       points += frame.shots.sum(&:score)
-      shot_index += frame.shots.size
 
       next if frame_index == FINAL_FRAME_INDEX || frame.open?
 
       # ストライクは次の STRIKE_BONUS_SHOTS 投、スペアでは次の SPARE_BONUS_SHOTS 投がボーナス対象
       bonus_count = frame.strike? ? STRIKE_BONUS_SHOTS : SPARE_BONUS_SHOTS
-      bonus_shots = all_shots[shot_index, bonus_count]
+
+      next_shots = @frames[(frame_index + 1)..(frame_index + 2)].flat_map(&:shots)
+      bonus_shots = next_shots[0, bonus_count]
       points += frame.bonus_score(bonus_shots)
     end
 
